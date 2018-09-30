@@ -3,7 +3,18 @@ PROJECT_NAME="${1}"
 BOOTSTRAP_STORAGE_ACCOUNT_NAME="${2}"
 BOOTSTRAP_STORAGE_ACCOUNT_KEY="${3}"
 BOOTSTRAP_STORAGE_ACCOUNT_SAS="${4}"
+OMS_WORKSPACE_ID="${5}"
+OMS_WORKSPACE_KEY="${6}"
 STORAGE_ACCOUNT_ID="${7}"
+
+# wait until all installers are finished
+while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 30; done
+
+# onboard OMS agent
+until sh onboard_agent.sh -w "${OMS_WORKSPACE_ID}" -s "${OMS_WORKSPACE_KEY}"; do
+	echo "Retrying onboard agent installation in 10 seconds"
+	sleep 10
+done
 
 # define root of all evil
 ROOT_DIR=/opt/${PROJECT_NAME}

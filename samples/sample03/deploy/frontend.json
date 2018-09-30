@@ -48,12 +48,12 @@
     "variables": {
         "apiVersions": "[parameters('apiVersions')]",
         "uniqueNameFix": "[parameters('uniqueNameFix')]",
-        "vmName": "[concat('jumpbox-vm-', variables('uniqueNameFix'))]",
-        "ipName": "[concat('jumpbox-ip-', variables('uniqueNameFix'))]",
-        "dnsName": "[concat('jumpbox-dns-', variables('uniqueNameFix'))]",
-        "nicName": "[concat('jumpbox-nic-', variables('uniqueNameFix'))]",
-        "nsgName": "[concat('jumpbox-nsg-', variables('uniqueNameFix'))]",
-        "dskName": "[concat('jumpbox-dsk-', variables('uniqueNameFix'))]",
+        "vmName": "[concat('frontend-vm-', variables('uniqueNameFix'))]",
+        "ipName": "[concat('frontend-ip-', variables('uniqueNameFix'))]",
+        "dnsName": "[concat('frontend-dns-', variables('uniqueNameFix'))]",
+        "nicName": "[concat('frontend-nic-', variables('uniqueNameFix'))]",
+        "nsgName": "[concat('frontend-nsg-', variables('uniqueNameFix'))]",
+        "dskName": "[concat('frontend-dsk-', variables('uniqueNameFix'))]",
         "subnetId": "[parameters('subnetId')]",
         "singleQuote": "'"
     },
@@ -113,31 +113,12 @@
                 "settings": {
                     "fileUris": [
                         "[concat(uri(deployment().properties.templateLink.uri, 'download.sh'), parameters('bootstrapStorageAccountSas'))]",
-                        "[concat(uri(deployment().properties.templateLink.uri, 'frontend-init.sh'), parameters('bootstrapStorageAccountSas'))]"
+                        "[concat(uri(deployment().properties.templateLink.uri, 'frontend-init.sh'), parameters('bootstrapStorageAccountSas'))]",
+                        "https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh"
                     ]
                 },
                 "protectedSettings": {
-                    "commandToExecute": "[concat('./frontend-init.sh',' ',variables('singleQuote'),parameters('projectName'),variables('singleQuote'),' ',variables('singleQuote'),parameters('bootstrapStorageAccountName'),variables('singleQuote'),' ', variables('singleQuote'),parameters('bootstrapStorageAccountKey'),variables('singleQuote'),' ',variables('singleQuote'), parameters('bootstrapStorageAccountSas'),variables('singleQuote'),' ', variables('singleQuote'),parameters('storageAccountId'),variables('singleQuote'))]"
-                }
-            }
-        },
-        {
-            "type": "extensions",
-            "name": "OMSExtension",
-            "apiVersion": "2015-06-15",
-            "location": "<location>",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-            ],
-            "properties": {
-                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                "type": "OmsAgentForLinux",
-                "typeHandlerVersion": "1.7",
-                "settings": {
-                    "workspaceId": "[parameters('omsWorkspaceId')]"
-                },
-                "protectedSettings": {
-                    "workspaceKey": "[parameters('omsWorkspaceKey')]"
+                    "commandToExecute": "[concat('./frontend-init.sh',' ', variables('singleQuote'), parameters('projectName'), variables('singleQuote'),' ', variables('singleQuote'), parameters('bootstrapStorageAccountName'), variables('singleQuote'),' ', variables('singleQuote'), parameters('bootstrapStorageAccountKey'), variables('singleQuote'),' ', variables('singleQuote'), parameters('bootstrapStorageAccountSas'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceId'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceKey'), variables('singleQuote'),' ', variables('singleQuote'), parameters('storageAccountId'), variables('singleQuote'))]"
                 }
             }
         },
@@ -196,9 +177,9 @@
             "apiVersion": "[variables('apiVersions').networkSecurityGroups]",
             "name": "[concat(variables('nsgName'), '/default_allow_http_name')]",
             "properties": {
-                "protocol": "HTTP",
+                "protocol": "TCP",
                 "sourcePortRange": "*",
-                "destinationPortRange": "80",
+                "destinationPortRange": "8080",
                 "sourceAddressPrefix": "*",
                 "destinationAddressPrefix": "*",
                 "access": "Allow",

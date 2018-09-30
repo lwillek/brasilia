@@ -76,11 +76,14 @@ if [ -z ${SERVICE_PRINCIPAL_KEY+x} ]
 	exit 1; 
 fi
 
-
+pusha ..
 # prepare target environment
 rm -rf ${OUTPUT_DIR}
 mkdir -p ${OUTPUT_DIR}/deploy
-cp -r * ${OUTPUT_DIR}/deploy
+cp -r ./deploy/* ${OUTPUT_DIR}/deploy
+mkdir -p ${OUTPUT_DIR}/scripts
+cp -r ./scripts/* ${OUTPUT_DIR}/scripts
+popa
 
 # pass the environment
 cat <<-EOF > ${OUTPUT_DIR}/deploy/environment.sh
