@@ -24,11 +24,13 @@ cat <<-EOF > ${FRONTEND_STATUS_SERVICE_FILE}
 Description=run frontend status 
 
 [Service]
-Type=simple
-WatchdogSec=3min
-RestartSec=1min
-Restart=always
-ExecStart=${ROOT_DIR}/frontend/status.sh "<PROJECT_NAME>" "<ROOT_DIR>" "<STORAGE_ACCOUNT_ID>"
+User=ubuntu
+WorkingDirectory=${ROOT_DIR}/frontend
+ExecStart=/usr/bin/java -jar api-spring-boot-0.1.0.jar
+SuccessExitStatus=143
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

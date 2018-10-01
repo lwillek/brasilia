@@ -1,11 +1,8 @@
 #!/bin/bash
 PROJECT_NAME="${1}"
-BOOTSTRAP_STORAGE_ACCOUNT_NAME="${2}"
-BOOTSTRAP_STORAGE_ACCOUNT_KEY="${3}"
-BOOTSTRAP_STORAGE_ACCOUNT_SAS="${4}"
-OMS_WORKSPACE_ID="${5}"
-OMS_WORKSPACE_KEY="${6}"
-STORAGE_ACCOUNT_ID="${7}"
+OMS_WORKSPACE_ID="${2}"
+OMS_WORKSPACE_KEY="${3}"
+STORAGE_ACCOUNT_ID="${4}"
 
 # wait until all installers are finished
 while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 30; done
@@ -34,24 +31,14 @@ chmod +x ${ROOT_DIR}/sanity-check.sh
 
 # create working folders
 mkdir -vp ${ROOT_DIR}/frontend
-# download
-./download.sh ${BOOTSTRAP_STORAGE_ACCOUNT_NAME} ${BOOTSTRAP_STORAGE_ACCOUNT_KEY} bootstrap frontend.tar.gz ${ROOT_DIR}/frontend/frontend.tar.gz
-# change dir to frontend
-pushd ${ROOT_DIR}/frontend
 # untar file
-tar -xzvf frontend.tar.gz
-# clean up
-rm -rf frontend.tar.gz
+tar -xzvf ./frontend.tar.gz -C ${ROOT_DIR}/frontend
 # set permissions for all scripts
 chmod +x ${ROOT_DIR}/frontend/*.sh
-# restore dir
-popd
+
 # replace in target init file 
 sed --in-place=.bak \
 	-e "s|<PROJECT_NAME>|${PROJECT_NAME}|" \
-	-e "s|<BOOTSTRAP_STORAGE_ACCOUNT_NAME>|${BOOTSTRAP_STORAGE_ACCOUNT_NAME}|" \
-	-e "s|<BOOTSTRAP_STORAGE_ACCOUNT_KEY>|${BOOTSTRAP_STORAGE_ACCOUNT_KEY}|" \
-	-e "s|<BOOTSTRAP_STORAGE_ACCOUNT_SAS>|${BOOTSTRAP_STORAGE_ACCOUNT_SAS}|" \
 	-e "s|<ROOT_DIR>|${ROOT_DIR}|" \
 	-e "s|<STORAGE_ACCOUNT_ID>|${STORAGE_ACCOUNT_ID}|" \
 	${ROOT_DIR}/frontend/init.sh

@@ -112,13 +112,13 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "[concat(uri(deployment().properties.templateLink.uri, 'download.sh'), parameters('bootstrapStorageAccountSas'))]",
                         "[concat(uri(deployment().properties.templateLink.uri, 'frontend-init.sh'), parameters('bootstrapStorageAccountSas'))]",
+                        "[concat(uri(deployment().properties.templateLink.uri, 'frontend.tar.gz'), parameters('bootstrapStorageAccountSas'))]",
                         "https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh"
                     ]
                 },
                 "protectedSettings": {
-                    "commandToExecute": "[concat('./frontend-init.sh',' ', variables('singleQuote'), parameters('projectName'), variables('singleQuote'),' ', variables('singleQuote'), parameters('bootstrapStorageAccountName'), variables('singleQuote'),' ', variables('singleQuote'), parameters('bootstrapStorageAccountKey'), variables('singleQuote'),' ', variables('singleQuote'), parameters('bootstrapStorageAccountSas'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceId'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceKey'), variables('singleQuote'),' ', variables('singleQuote'), parameters('storageAccountId'), variables('singleQuote'))]"
+                    "commandToExecute": "[concat('./frontend-init.sh',' ', variables('singleQuote'), parameters('projectName'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceId'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceKey'), variables('singleQuote'),' ', variables('singleQuote'), parameters('storageAccountId'), variables('singleQuote'))]"
                 }
             }
         },
