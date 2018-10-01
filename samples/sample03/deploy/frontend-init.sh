@@ -2,7 +2,6 @@
 PROJECT_NAME="${1}"
 OMS_WORKSPACE_ID="${2}"
 OMS_WORKSPACE_KEY="${3}"
-STORAGE_ACCOUNT_ID="${4}"
 
 # wait until all installers are finished
 while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 30; done
@@ -28,20 +27,3 @@ cat /var/lib/waagent/custom-script/download/1/stdout
 EOF
 # right permissions
 chmod +x ${ROOT_DIR}/sanity-check.sh
-
-# create working folders
-mkdir -vp ${ROOT_DIR}/frontend
-# untar file
-tar -xzvf ./frontend.tar.gz -C ${ROOT_DIR}/frontend
-# set permissions for all scripts
-chmod +x ${ROOT_DIR}/frontend/*.sh
-
-# replace in target init file 
-sed --in-place=.bak \
-	-e "s|<PROJECT_NAME>|${PROJECT_NAME}|" \
-	-e "s|<ROOT_DIR>|${ROOT_DIR}|" \
-	-e "s|<STORAGE_ACCOUNT_ID>|${STORAGE_ACCOUNT_ID}|" \
-	${ROOT_DIR}/frontend/init.sh
-
-# execute directly
-${ROOT_DIR}/frontend/init.sh

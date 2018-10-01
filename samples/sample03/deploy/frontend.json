@@ -26,12 +26,6 @@
                 "description": "Admin password on all VMs."
             }
         },
-        "bootstrapStorageAccountName": {
-            "type": "string"
-        },
-        "bootstrapStorageAccountKey": {
-            "type": "securestring"
-        },
         "bootstrapStorageAccountSas": {
             "type": "securestring"
         },
@@ -39,9 +33,6 @@
             "type": "string"
         },
         "omsWorkspaceKey": {
-            "type": "string"
-        },
-        "storageAccountId": {
             "type": "string"
         }
     },
@@ -118,7 +109,7 @@
                     ]
                 },
                 "protectedSettings": {
-                    "commandToExecute": "[concat('./frontend-init.sh',' ', variables('singleQuote'), parameters('projectName'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceId'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceKey'), variables('singleQuote'),' ', variables('singleQuote'), parameters('storageAccountId'), variables('singleQuote'))]"
+                    "commandToExecute": "[concat('./frontend-init.sh',' ', variables('singleQuote'), parameters('projectName'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceId'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceKey'), variables('singleQuote'))]"
                 }
             }
         },

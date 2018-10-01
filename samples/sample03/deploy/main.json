@@ -175,12 +175,6 @@
           "adminPassword": {
             "value": "[variables('adminPassword')]"
           },
-          "bootstrapStorageAccountName": {
-            "value": "[parameters('bootstrapStorageAccount')]"
-          },
-          "bootstrapStorageAccountKey": {
-            "value": "[listKeys(variables('bootstrapStorageAccountId'), variables('apiVersions').storageAccounts).keys[0].value]"
-          },
           "bootstrapStorageAccountSas": {
             "value": "[parameters('bootstrapStorageAccountSas')]"
           },
@@ -189,9 +183,6 @@
           },
           "omsWorkspaceKey": {
             "value": "[reference('analytics').outputs.workspaceKey.value]"
-          },
-          "storageAccountId": {
-            "value": "[reference('storage').outputs.storageAccountId.value]"
           }
         }
       }
