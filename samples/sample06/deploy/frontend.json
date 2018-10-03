@@ -44,7 +44,7 @@
         },
         "vmCount": {
             "type": "int",
-            "defaultValue": 0,
+            "defaultValue": 2,
             "metadata": {
                 "description": "Default Number of proxy servers to deploy and keep running (min and default in scaling set)."
             },
