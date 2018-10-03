@@ -58,22 +58,6 @@ sed --in-place=.bak \
 -e "s|<bootstrapStorageAccountUrl>|${BLOB_BASE_URL}|" \
 main.parameters.json
 
-# prepare & tar all files up
-pusha ../scripts/frontend
-display_progress "Packaging frontend subsystem related files"
-cp ./site/target/*api*.jar .
-tar --exclude='./site' -czvf ../frontend.tar.gz .
-pusha site
-# build site
-mvn clean package
-popa
-# upload files
-display_progress "Uploading frontend subsystem related files to bootstrap account"
-az storage blob upload -c bootstrap -f ../frontend.tar.gz -n frontend.tar.gz
-# clean up
-rm -rf ../frontend.tar.gz
-popa
-
 display_progress "Deploying main template into resource group"
 az group deployment create -g ${RESOURCE_GROUP} --template-uri ${MAIN_URI} --parameters @main.parameters.json --output json > main.output.json
 
