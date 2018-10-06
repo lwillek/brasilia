@@ -5,11 +5,12 @@ STORAGE_ACCOUNT_ID="<STORAGE_ACCOUNT_ID>"
 
 # wait until all installers are finished
 while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 30; done;
+
 # update
-DEBIAN_FRONTEND="noninteractive" apt-get -qy update
+DEBIAN_FRONTEND="noninteractive" sudo apt-get -qy update
 # install additional packages here
 # install jq
-DEBIAN_FRONTEND="noninteractive" apt-get -qy install jq 
+DEBIAN_FRONTEND="noninteractive" sudo apt-get -qy install jq 
 # Install Java JDK 8
 DEBIAN_FRONTEND="noninteractive" sudo add-apt-repository -y ppa:webupd8team/java
 DEBIAN_FRONTEND="noninteractive" sudo apt-get -qy update

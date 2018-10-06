@@ -5,6 +5,7 @@ function replace_versions() {
 		-e "s|<deploymentsApiVersion>|${DEPLOYMENTS_API_VERSION}|" \
 		-e "s|<imagesApiVersion>|${IMAGES_API_VERSION}|" \
 		-e "s|<loadBalancersApiVersion>|${LOAD_BALACERS_API_VERSION}|" \
+		-e "s|<dnsZones>|${DNS_ZONES_API_VERSION}|" \
 		-e "s|<networkInterfacesApiVersion>|${NETWORK_INTERFACES_API_VERSION}|" \
 		-e "s|<networkSecurityGroupsApiVersion>|${NETWORK_SECURITY_GROUPS_API_VERSION}|" \
 		-e "s|<virtualNetworkPeeringsApiVersion>|${VIRTUAL_NETWORK_PEERINGS_API_VERSION}|" \

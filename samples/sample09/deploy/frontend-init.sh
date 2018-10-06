@@ -5,9 +5,11 @@ OMS_WORKSPACE_KEY="${3}"
 STORAGE_ACCOUNT_ID="${4}"
 
 # wait until all installers are finished
-# while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 30; done
+while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 30; done
 
-# # onboard OMS agent
+# onboard OMS agent
+# wget https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh && sh onboard_agent.sh -w "${OMS_WORKSPACE_ID}" -s "${OMS_WORKSPACE_KEY}"
+
 # until sh onboard_agent.sh -w "${OMS_WORKSPACE_ID}" -s "${OMS_WORKSPACE_KEY}"; do
 # 	echo "Retrying onboard agent installation in 10 seconds"
 # 	sleep 10
@@ -23,6 +25,8 @@ mkdir -vp ${ROOT_DIR}
 cat <<-EOF >${ROOT_DIR}/sanity-check.sh
 ls -la /etc/systemd/system
 cat /var/log/waagent.log
+cat /var/lib/waagent/custom-script/download/0/stderr
+cat /var/lib/waagent/custom-script/download/0/stdout
 cat /var/lib/waagent/custom-script/download/1/stderr
 cat /var/lib/waagent/custom-script/download/1/stdout
 EOF
@@ -44,4 +48,4 @@ sed --in-place=.bak \
 	${ROOT_DIR}/frontend/init.sh
 
 # execute directly
-${ROOT_DIR}/frontend/init.sh
+# ${ROOT_DIR}/frontend/init.sh

@@ -81,6 +81,29 @@ az group deployment create -g ${RESOURCE_GROUP} --template-uri ${MAIN_URI} --par
 display_progress "Main deployment completed"
 MAIN_OUTPUT=$(cat main.output.json)
 
+# get usefull info
+FRONTEND_IP_ADDRESS=$(echo "${MAIN_OUTPUT}" | jq -r '.properties.outputs.frontendIpAddress.value')
+MANAGEMENT_VIRTUAL_NETWORK_ID=$(echo "${MAIN_OUTPUT}" | jq -r '.properties.outputs.managementVirtualNetworkId.value')
+APPLICATION_VIRTUAL_NETWORK_ID=$(echo "${MAIN_OUTPUT}" | jq -r '.properties.outputs.applicationVirtualNetworkId.value')
+DNS_ZONE_NAME=${PROJECT_NAME}-dns-${UNIQUE_NAME_FIX}.org
+DNS_FRONTEND_RECORD="frontend"
+
+# create dns zone
+display_progress "Creating Private DNS zone"
+# create a private zone with proper name resolution 
+az network dns zone create \
+    --resource-group ${RESOURCE_GROUP} \
+    --name ${DNS_ZONE_NAME} \
+    --zone-type Private \
+    --resolution-vnets ${MANAGEMENT_VIRTUAL_NETWORK_ID} ${APPLICATION_VIRTUAL_NETWORK_ID}
+    
+# create proper A record 
+az network dns record-set a add-record \
+    --resource-group ${RESOURCE_GROUP} \
+    --zone-name ${DNS_ZONE_NAME} \
+    --record-set-name ${DNS_FRONTEND_RECORD} \
+    --ipv4-address ${FRONTEND_IP_ADDRESS}
+
 # clean up
 # display_progress "Cleaning up"
 # az storage account delete --resource-group ${RESOURCE_GROUP} --name ${BOOTSTRAP_STORAGE_ACCOUNT} --yes

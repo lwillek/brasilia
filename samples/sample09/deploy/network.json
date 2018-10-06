@@ -13,6 +13,7 @@
         }
     },
     "variables": {
+        "projectName": "[parameters('projectName')]",
         "apiVersions": "[parameters('apiVersions')]",
         "uniqueNameFix": "[parameters('uniqueNameFix')]",
         "applicationVirtualNetwork": "[concat('app-network-vnet-',variables('uniqueNameFix'))]",
@@ -24,8 +25,8 @@
         "frontendSubnetPrefix": "10.0.1.0/24",
         "frontendIpAddress": "10.0.1.6",
         "jumpboxSubnetPrefix": "10.1.10.0/24",
-        "managementApplicationPeeringName": "[concat('mnt-app-network-peering-',variables('uniqueNameFix'))]",
-        "applicationManagementPeeringName": "[concat('app-mnt-network-peering-',variables('uniqueNameFix'))]"
+        "managementApplicationPeering": "[concat('mnt-app-network-peering-',variables('uniqueNameFix'))]",
+        "applicationManagementPeering": "[concat('app-mnt-network-peering-',variables('uniqueNameFix'))]"
     },
     "resources": [
         {
@@ -47,26 +48,28 @@
                         }
                     }
                 ]
-            }
-        },
-        {
-            "type": "virtualNetworkPeerings",
-            "apiVersion": "[variables('apiVersions').virtualNetworkPeerings]",
-            "name": "[variables('managementApplicationPeeringName')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('managementVirtualNetwork'))]",
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('applicationVirtualNetwork'))]"
-            ],
-            "properties": {
-                "allowVirtualNetworkAccess": "true",
-                "allowForwardedTraffic": "false",
-                "allowGatewayTransit": "false",
-                "useRemoteGateways": "false",
-                "remoteVirtualNetwork": {
-                    "id": "[resourceId('Microsoft.Network/virtualNetworks',variables('applicationVirtualNetwork'))]"
+            },
+            "resources": [
+                {
+                    "type": "virtualNetworkPeerings",
+                    "apiVersion": "[variables('apiVersions').virtualNetworkPeerings]",
+                    "name": "[variables('managementApplicationPeering')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Network/virtualNetworks/', variables('managementVirtualNetwork'))]",
+                        "[concat('Microsoft.Network/virtualNetworks/', variables('applicationVirtualNetwork'))]"
+                    ],
+                    "properties": {
+                        "allowVirtualNetworkAccess": "true",
+                        "allowForwardedTraffic": "false",
+                        "allowGatewayTransit": "false",
+                        "useRemoteGateways": "false",
+                        "remoteVirtualNetwork": {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks',variables('applicationVirtualNetwork'))]"
+                        }
+                    }
                 }
-            }
+            ]
         },
         {
             "type": "Microsoft.Network/virtualNetworks",
@@ -87,26 +90,28 @@
                         }
                     }
                 ]
-            }
-        },
-        {
-            "type": "virtualNetworkPeerings",
-            "apiVersion": "[variables('apiVersions').virtualNetworkPeerings]",
-            "name": "[variables('applicationManagementPeeringName')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('managementVirtualNetwork'))]",
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('applicationVirtualNetwork'))]"
-            ],
-            "properties": {
-                "allowVirtualNetworkAccess": "true",
-                "allowForwardedTraffic": "false",
-                "allowGatewayTransit": "false",
-                "useRemoteGateways": "false",
-                "remoteVirtualNetwork": {
-                    "id": "[resourceId('Microsoft.Network/virtualNetworks',variables('managementVirtualNetwork'))]"
+            },
+            "resources": [
+                {
+                    "type": "virtualNetworkPeerings",
+                    "apiVersion": "[variables('apiVersions').virtualNetworkPeerings]",
+                    "name": "[variables('applicationManagementPeering')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Network/virtualNetworks/', variables('managementVirtualNetwork'))]",
+                        "[concat('Microsoft.Network/virtualNetworks/', variables('applicationVirtualNetwork'))]"
+                    ],
+                    "properties": {
+                        "allowVirtualNetworkAccess": "true",
+                        "allowForwardedTraffic": "false",
+                        "allowGatewayTransit": "false",
+                        "useRemoteGateways": "false",
+                        "remoteVirtualNetwork": {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks',variables('managementVirtualNetwork'))]"
+                        }
+                    }
                 }
-            }
+            ]
         }
     ],
     "outputs": {
@@ -116,6 +121,14 @@
         },
         "frontendIpAddress": {
             "value": "[variables('frontendIpAddress')]",
+            "type": "string"
+        },
+        "managementVirtualNetworkId": {
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('managementVirtualNetwork'))]",
+            "type": "string"
+        },
+        "applicationVirtualNetworkId": {
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('applicationVirtualNetwork'))]",
             "type": "string"
         },
         "jumpboxSubnetId": {

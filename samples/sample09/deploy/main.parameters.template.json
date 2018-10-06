@@ -12,6 +12,7 @@
         "loadBalancers": "<loadBalancersApiVersion>",
         "networkInterfaces": "<networkInterfacesApiVersion>",
         "networkSecurityGroups": "<networkSecurityGroupsApiVersion>",
+        "dnsZones":"<dnsZones>",
         "virtualNetworkPeerings": "<virtualNetworkPeeringsApiVersion>",
         "publicIPAddresses": "<publicIPAddressesApiVersion>",
         "serverFarms": "<serverFarmsApiVersion>",
