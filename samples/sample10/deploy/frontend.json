@@ -14,9 +14,6 @@
         "subnetId": {
             "type": "string"
         },
-        "ipAddress": {
-            "type": "string"
-        },
         "zoneCount": {
             "type": "int",
             "defaultValue": 2
@@ -61,7 +58,7 @@
         },
         "eventHubKey": {
             "type": "string"
-        }
+        }        
     },
     "variables": {
         "apiVersions": "[parameters('apiVersions')]",
@@ -73,7 +70,6 @@
         "nsgName": "[concat('frontend-nsg-', variables('uniqueNameFix'))]",
         "dskName": "[concat('frontend-dsk-', variables('uniqueNameFix'))]",
         "subnetId": "[parameters('subnetId')]",
-        "ipAddress": "[parameters('ipAddress')]",
         "zoneCount": "[parameters('zoneCount')]",
         "lbName": "[concat('frontend-lb-', variables('uniqueNameFix'))]",
         "bpName": "[concat('frontend-bp-', variables('uniqueNameFix'))]",
@@ -84,11 +80,28 @@
     },
     "resources": [
         {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "[variables('apiVersions').publicIPAddresses]",
+            "name": "[variables('ipName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('dnsName')]"
+                }
+            }
+        },
+        {
             "type": "Microsoft.Network/loadBalancers",
             "apiVersion": "[variables('apiVersions').loadBalancers]",
             "name": "[variables('lbName')]",
             "location": "[resourceGroup().location]",
-            "dependsOn": [],
+            "dependsOn": [
+                "[variables('ipName')]"
+            ],
             "sku": {
                 "name": "Standard"
             },
@@ -97,11 +110,9 @@
                     {
                         "name": "LoadBalancerFrontEnd",
                         "properties": {
-                            "subnet": {
-                                "id": "[variables('subnetId')]"
-                            },
-                            "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[variables('ipAddress')]"
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))]"
+                            }
                         }
                     }
                 ],
@@ -271,11 +282,12 @@
                 "settings": {
                     "fileUris": [
                         "[concat(uri(deployment().properties.templateLink.uri, 'frontend-init.sh'), parameters('bootstrapStorageAccountSas'))]",
-                        "[concat(uri(deployment().properties.templateLink.uri, 'frontend.tar.gz'), parameters('bootstrapStorageAccountSas'))]"
+                        "[concat(uri(deployment().properties.templateLink.uri, 'frontend.tar.gz'), parameters('bootstrapStorageAccountSas'))]",
+                        "https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh"
                     ]
                 },
                 "protectedSettings": {
-                    "commandToExecute": "[concat('./frontend-init.sh',' ', variables('singleQuote'), parameters('projectName'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceId'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceKey'), variables('singleQuote'),' ', variables('singleQuote'), parameters('storageAccountId'), variables('singleQuote'),' ', variables('singleQuote'), parameters('eventHubNamespace'), variables('singleQuote')' ', variables('singleQuote'), parameters('eventHubPath'), variables('singleQuote')' ', variables('singleQuote'), parameters('eventHubKey'), variables('singleQuote'))]"
+                    "commandToExecute": "[concat('./frontend-init.sh',' ', variables('singleQuote'), parameters('projectName'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceId'), variables('singleQuote'),' ', variables('singleQuote'), parameters('omsWorkspaceKey'), variables('singleQuote'),' ', variables('singleQuote'), parameters('storageAccountId'), variables('singleQuote'),' ', variables('singleQuote'), parameters('eventHubNamespace'), variables('singleQuote'),' ', variables('singleQuote'), parameters('eventHubPath'), variables('singleQuote'),' ', variables('singleQuote'), parameters('eventHubKey'), variables('singleQuote'))]"
                 }
             }
         }

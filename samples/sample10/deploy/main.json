@@ -70,6 +70,30 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "[variables('apiVersions').deployments]",
+      "name": "insights",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(uri(deployment().properties.templateLink.uri, 'insights.json'), parameters('bootstrapStorageAccountSas'))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "projectName": {
+            "value": "[variables('projectName')]"
+          },
+          "apiVersions": {
+            "value": "[variables('apiVersions')]"
+          },
+          "uniqueNameFix": {
+            "value": "[variables('uniqueNameFix')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "[variables('apiVersions').deployments]",
       "name": "analytics",
       "dependsOn": [],
       "properties": {
@@ -139,6 +163,36 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "[variables('apiVersions').deployments]",
+      "name": "services",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(uri(deployment().properties.templateLink.uri, 'services.json'), parameters('bootstrapStorageAccountSas'))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "projectName": {
+            "value": "[variables('projectName')]"
+          },
+          "apiVersions": {
+            "value": "[variables('apiVersions')]"
+          },
+          "uniqueNameFix": {
+            "value": "[variables('uniqueNameFix')]"
+          },
+          "storageAccountId": {
+            "value": "[reference('storage').outputs.storageAccountId.value]"
+          },
+          "applicationInsightsKey": {
+            "value": "[reference('insights').outputs.workspaceKey.value]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "[variables('apiVersions').deployments]",
       "name": "jumpbox",
       "dependsOn": [],
       "properties": {
@@ -167,7 +221,7 @@
             "value": "[variables('adminPassword')]"
           }
         }
-      }
+      } 
     },
     {
       "type": "Microsoft.Resources/deployments",
@@ -192,9 +246,6 @@
           },
           "subnetId": {
             "value": "[reference('network').outputs.frontendSubnetId.value]"
-          },
-          "ipAddress": {
-            "value": "[reference('network').outputs.frontendIpAddress.value]"
           },
           "adminUserName": {
             "value": "[variables('adminUserName')]"
@@ -222,23 +273,11 @@
           },
           "eventHubKey": {
             "value": "[reference('events').outputs.eventHubKey.value]"
-          }
+          }          
         }
       }
     }
   ],
   "outputs": {
-    "frontendIpAddress": {
-      "value": "[reference('network').outputs.frontendIpAddress.value]",
-      "type": "string"
-    },
-    "managementVirtualNetworkId": {
-      "value": "[reference('network').outputs.managementVirtualNetworkId.value]",
-      "type": "string"
-    },
-    "applicationVirtualNetworkId": {
-      "value": "[reference('network').outputs.applicationVirtualNetworkId.value]",
-      "type": "string"
-    }
   }
 }
