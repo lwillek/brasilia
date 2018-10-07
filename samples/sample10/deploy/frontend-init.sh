@@ -4,19 +4,16 @@ OMS_WORKSPACE_ID="${2}"
 OMS_WORKSPACE_KEY="${3}"
 STORAGE_ACCOUNT_ID="${4}"
 EVENT_HUB_NAMESPACE="${5}"
-EVENT_HUB_PATH="${5}"
-EVENT_HUB_KEY="${5}"
+EVENT_HUB_PATH="${6}"
+EVENT_HUB_KEY="${7}"
 
 # wait until all installers are finished
 while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 30; done
 
-# onboard OMS agent
-# wget https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh && sh onboard_agent.sh -w "${OMS_WORKSPACE_ID}" -s "${OMS_WORKSPACE_KEY}"
-
-# until sh onboard_agent.sh -w "${OMS_WORKSPACE_ID}" -s "${OMS_WORKSPACE_KEY}"; do
-# 	echo "Retrying onboard agent installation in 10 seconds"
-# 	sleep 10
-# done
+until sh onboard_agent.sh -w "${OMS_WORKSPACE_ID}" -s "${OMS_WORKSPACE_KEY}"; do
+	echo "Retrying onboard agent installation in 10 seconds"
+	sleep 10
+done
 
 # define root of all evil
 ROOT_DIR=/opt/${PROJECT_NAME}
